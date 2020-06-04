@@ -131,6 +131,15 @@ export default function Home({ error, jwt, resultStates }) {
                 {state}
               </Button>
             ))}
+            <Button
+              d="block"
+              variant="outline"
+              mb={2}
+              onClick={async (e) => {
+                setLoading(true);
+                updateEntry();
+              }}
+            >Skip</Button>
           </Box>
         </Grid>
 			</Content>
