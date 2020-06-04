@@ -24,6 +24,7 @@ export default async (req, res) => {
       "School",
       "Underrepresented",
       "Cognito ID",
+      "Postal Code",
     ]
   })).firstPage();
   if (result.length === 0) return res.send(null);

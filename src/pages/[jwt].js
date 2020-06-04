@@ -10,6 +10,15 @@ import Page from '../components/page';
 
 const { serverRuntimeConfig } = getConfig();
 
+const safeBr = (str) => str
+          .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;")
+         .replace(/\n/g, "<br />");
+
+
 export const getServerSideProps = async ({ params: { jwt } }, res) => {
   let resultStates;
   try {
@@ -47,7 +56,7 @@ export default function Home({ error, jwt, resultStates }) {
   );
 
   if (loading) return (
-		<Page slug={`/${jwt}`}>
+		<Page slug={`/${jwt}`} title="Loading... - Labs Application Review">
 			<Content>
         <Box textAlign="center">
           <Spinner />
@@ -57,7 +66,7 @@ export default function Home({ error, jwt, resultStates }) {
   );
 
   if (!entry) return (
-		<Page slug={`/${jwt}`}>
+		<Page slug={`/${jwt}`} title="Labs Application Review">
 			<Content>
 				<Heading as="h2" fontSize="5xl" textAlign="center">All done for now!</Heading>
 			</Content>
@@ -65,10 +74,10 @@ export default function Home({ error, jwt, resultStates }) {
   );
 
   return (
-		<Page slug={`/${jwt}`}>
+		<Page slug={`/${jwt}`} title={`#${entry['Cognito ID']} - Labs Application Review`}>
 			<Content>
 				<Heading as="h2" fontSize="5xl" textAlign="center">Reviewing #{entry['Cognito ID']}</Heading>
-        <Grid templateColumns="3fr 1fr">
+        <Grid templateColumns={{ base: '1fr', md: '3fr 1fr' }}>
           <Box p={8}>
             <Box as="table">
               {Object.keys(entry).filter((key) => !['id', 'Cognito ID'].includes(key)).map((key) => (
@@ -80,10 +89,11 @@ export default function Home({ error, jwt, resultStates }) {
                         {entry[key].map((item) => <li>{item}</li>)}
                       </ul>
                     )}
+                    {typeof entry[key] === 'number' && entry[key]}
                     {typeof entry[key] === 'boolean' && (entry[key] ? 'TRUE' : 'FALSE')}
                     {(typeof entry[key] === 'string' && !Array.isArray(entry[key])) && (['http://', 'https:/'].includes(entry[key].substr(0, 7)) ? (
                       <Button as="a" href={entry[key]} variant="outline" target="_blank">Link</Button>
-                    ) : entry[key])}
+                    ) : <div dangerouslySetInnerHTML={{ __html: safeBr(entry[key]) }} /> )}
                   </Box>
                 </Box>
               ))}
